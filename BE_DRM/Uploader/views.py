@@ -7,9 +7,8 @@ from rest_framework.response import Response
 @api_view(['POST'])
 def upload_to_s3(request):
     file = request.FILES['file']
-    # address = request.address
-    # uploadedAt = request.uploadedAt
-    # keyWords = request.keyWords
+    uploadedAt = request.data['uploadedAt']
+    keyWords = request.data['keyWords']
     try:
         s3 = boto3.client(
             's3',
@@ -18,9 +17,26 @@ def upload_to_s3(request):
             region_name=settings.AWS_S3_REGION_NAME
         )
         s3.upload_fileobj(file, settings.AWS_STORAGE_BUCKET_NAME, file.name)
-        # s3Url = "https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/{file.name}"
+        s3Url = f'https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/{file.name}'
+        dynamodb = boto3.resource(
+            'dynamodb',
+            aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+            aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+            region_name=settings.AWS_S3_REGION_NAME
+        )
+        table = dynamodb.Table('DRM')
+        response = table.put_item(
+            Item = {
+                'id': 1,
+                'fileName': file.name,
+                's3Url': s3Url,
+                'uploadedAt': uploadedAt,
+                'keyWords': keyWords
+            }
+        )
         return Response({
             'success': True,
+            'metaData': response,
             'message': 'File uploaded successfully'
         })
     except Exception as e:
@@ -31,11 +47,25 @@ def upload_to_s3(request):
 
 @api_view(['GET'])
 def searchFile(request):
-    print('hello', request.GET)
     try:
+        searchText = request.GET['searchText']
+        dynamodb = boto3.client(
+            'dynamodb',
+            aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+            aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+            region_name=settings.AWS_S3_REGION_NAME
+        )
+        response = dynamodb.scan(
+            TableName = 'DRM',
+            FilterExpression = 'contains(keyWords, :value)',
+            ExpressionAttributeValues = {
+                ':value': {'S' : searchText}
+            }
+        )
         return Response({
             'success': False, 
-            'message': 'Working!!!'
+            'metaData': response,
+            'message': 'Data search completed successfully'
         })
     except Exception as e:
         return Response({
