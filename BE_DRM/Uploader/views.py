@@ -144,7 +144,6 @@ def upload_to_s3(request):
         table = dynamodb.Table('DRM')
         response = table.put_item(
             Item = {
-                'id': 1,
                 'fileName': file.name,
                 's3Url': s3Url,
                 'uploadedAt': uploadedAt,

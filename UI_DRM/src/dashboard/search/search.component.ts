@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { DashaboarService, IItems } from '../Service/dashboard.service';
 import { HttpParams } from '@angular/common/http';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'drm-search',
@@ -10,10 +11,9 @@ import { HttpParams } from '@angular/common/http';
 export class SearchComponent {
   value:string ='';
 
-  lengths = Array.from(Array(50).keys()).map(x => x + 1);
 
   data: IItems[];
-  constructor(private _httpService : DashaboarService){
+  constructor(private _httpService : DashaboarService, private _snackBar: MatSnackBar){
 
 
   }
@@ -28,6 +28,13 @@ export class SearchComponent {
     this._httpService.getRecords(Params).subscribe((data)=>{
 
       this.data = data.metaData.Items;
+
+      if(this.data.length==0){
+        const ref =   this._snackBar.open('No Reasults Found');
+      setTimeout(()=>{
+        ref.dismiss();
+      },2000);
+      }
 
     });
   }

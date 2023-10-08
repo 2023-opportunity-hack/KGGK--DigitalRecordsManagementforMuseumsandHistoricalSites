@@ -3,7 +3,7 @@
         <div class="wrapper">
             <div class="file-wrapper">
                 <input type="file" #file hidden (change)="metadataFile($event, 'fileUploaded')"
-                    accept=".xml,.pdf,.jpeg,.jpg,.png,.mp3">
+                    accept=".xml,.pdf,.jpeg,.jpg,.png,.mp3,.doc">
                 <div morphDropFile class="file-placeholder" (onFileDropped)="metadataFile($event, 'fileDropped')">
                     <div *ngIf='metaDataFileName.length === 0'>
                         <span (click)="file.click()" class="clickable">Click</span> or drop pdf/jpeg/jpg/png/mp3/mp4/mkv file to

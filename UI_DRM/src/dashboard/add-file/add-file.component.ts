@@ -86,13 +86,13 @@ export class AddFileComponent implements OnInit {
         this.file = event.target.files[0];
         // if(this.fileMetadata(event.target.files[0])){return;}
         this.fileReader.readAsArrayBuffer(event.target.files[0]);
-        //console.log(this.fileReader)
-        //console.log(this.fileReader.result)
+        console.log(this.fileReader)
+        console.log(this.file)
         this.uploadForm.patchValue({
-          metaData: this.fileReader,
+          metaData: this.file,
         });
 
-        //console.log(this.uploadForm.value);
+        console.log(this.uploadForm.value);
 
 
         break;
@@ -174,16 +174,21 @@ export class AddFileComponent implements OnInit {
 
     let obj  = this.uploadForm.value;
 
+    let formdata = new FormData();
+    formdata.append('file',this.file);
+    formdata.append('keyWords', this.uploadForm.value.keywords);
+    formdata.append('uploadedAt', this.uploadForm.value.uploadedAt)
+
     obj['metadata'] = this.file;
-    if(!this.uploadForm.valid){
+    if(!this.file){
       const ref =   this._snackBar.open('Please Upload the file first');
       setTimeout(()=>{
         ref.dismiss();
       },2000);
     }
 
-    //console.log(obj);
-    this._dashboardService.putRecords(obj).subscribe();
+    console.log(formdata)
+    this._dashboardService.putRecords(formdata).subscribe();
 
     
   }

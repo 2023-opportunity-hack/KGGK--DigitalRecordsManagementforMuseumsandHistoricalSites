@@ -67,7 +67,7 @@ export interface IKeywords{
         return this.client.get<IRecords>(root + api.GET_RECORDS, {params: Params} );
     }
 
-    putRecords(payload : IPaload){
+    putRecords(payload : any){
         return this.client.post(root + api.PUT_RECORD,payload);
     }
 
