@@ -1,15 +1,87 @@
 import boto3
 from django.conf import settings
-from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+import yake
+import nltk
+nltk.download('stopwords')
+from nltk.corpus import stopwords
+stop_words = set(stopwords.words('english'))
+import aspose.words as aw
+import os
+pwd = os.path.dirname(__file__)
+import moviepy.editor as mp
+import speech_recognition as sr
+
+
+def getAudioKeywords(file):
+    import os
+    video_file = file
+    video_clip = mp.VideoFileClip(video_file)
+    audio = video_clip.audio
+    temp_audio_file = "temp_audio.wav"
+    audio.write_audiofile(temp_audio_file)
+    recognizer = sr.Recognizer()
+    recognizer.energy_threshold = 4000  
+    with sr.AudioFile(temp_audio_file) as source:
+        audio_data = recognizer.record(source)
+        try:
+            text = recognizer.recognize_sphinx(audio_data)
+            print("Extracted Text: " + text)
+        except sr.UnknownValueError:
+            print("Could not understand audio")
+        except sr.RequestError as e:
+            print(f"Recognition error; {e}")
+
+    os.remove(temp_audio_file)
+
+    audio_keywords = []
+    total_words = text.split()
+    total_word_length = len(total_words)
+    numOfKeywords = int(total_word_length*0.15)
+    kw_extractor = yake.KeywordExtractor(stopwords = stop_words, n=1, top = numOfKeywords)
+    keywords = kw_extractor.extract_keywords(text)
+    for kw in keywords:
+        audio_keywords.append(kw)
+    return audio_keywords
+
+
+def getDocKeywords(file):
+    doc = aw.Document(file)
+    doc.save("doc-to-text.txt")
+    f = open("doc-to-text.txt", "r")
+    text = f.read()
+    f.close()
+    total_words = text.split()
+    total_word_length = len(total_words)
+    numOfKeywords = int(total_word_length*0.05)
+    kw_extractor = yake.KeywordExtractor(stopwords = stop_words, n=1, top=numOfKeywords)
+    keywords = kw_extractor.extract_keywords(text)
+    docs_keywords = []
+    for kw in keywords:
+        docs_keywords.append(kw[0])
+    os.remove("doc-to-text.txt")
+    return docs_keywords
 
 @api_view(['POST'])
 def upload_to_s3(request):
     file = request.FILES['file']
     uploadedAt = request.data['uploadedAt']
     keyWords = request.data['keyWords']
+    keyWords = list(keyWords.split(","))
     try:
+        file_name = file.name
+        extension = file_name.rsplit(".",1)[-1]
+        if extension == 'doc':
+            docKeywords = getDocKeywords(file_name)
+            keyWords += docKeywords
+        elif extension == 'mp4':
+            with open(file_name, 'wb+') as f:
+                for chunk in file.chunks():
+                    f.write(chunk)
+            # audioKeywords = getAudioKeywords(file_name)
+        
+
         s3 = boto3.client(
             's3',
             aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
