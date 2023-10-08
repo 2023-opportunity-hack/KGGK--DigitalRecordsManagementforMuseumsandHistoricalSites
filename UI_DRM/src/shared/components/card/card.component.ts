@@ -21,6 +21,9 @@ export class CardComponent implements OnInit {
   _fileName : string= 'component.ts';
 
   @Input() url: string;
+  @Input() keyWords: string;
+  @Input() uploadedAt: string;
+
 
   constructor(private _cd : ChangeDetectorRef){}
 

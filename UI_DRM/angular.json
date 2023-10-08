@@ -72,6 +72,10 @@
               "browserTarget": "UI_DRM:build:development"
             }
           },
+          "options": {
+            "proxyConfig": "src/proxy.config.json",
+            "browserTarget": "move-safe:build"
+          },
           "defaultConfiguration": "development"
         },
         "extract-i18n": {

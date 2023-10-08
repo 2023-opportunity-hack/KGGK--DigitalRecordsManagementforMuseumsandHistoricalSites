@@ -8,7 +8,7 @@ import { DashboardRoutingModule } from './dashboard.roting.module';
 import { AngularMaterialsModule } from 'src/shared/material.module';
 import { SearchComponent } from './search/search.component';
 import { FormsModule, ReactiveFormsModule  } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 
 
 @NgModule({
@@ -24,8 +24,8 @@ import { HttpClientModule } from '@angular/common/http';
     DashboardRoutingModule,
     AngularMaterialsModule,
     FormsModule,
-    ReactiveFormsModule,
-    HttpClientModule
-  ]
+    ReactiveFormsModule
+  ],
+  providers:[HttpClient]
 })
 export class DashboardModule { }

@@ -4,15 +4,15 @@
                 <input  type="text" [(ngModel)]="value" placeholder="Search anything...">
         </div>
         <div class="button">
-            <button mat-stroked-button><mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="search"></mat-icon> Search </button>
+            <button mat-stroked-button (click)="onSearch()"><mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="search"></mat-icon> Search </button>
         </div>
     </div>
     
 
     <div class="cards">
 
-        <ng-container *ngFor="let i of lengths">
-        <drm-card fileName = "Ankur.pdf" url="https://kggk-files.s3.amazonaws.com/alligator+pit.jpg"></drm-card>
+        <ng-container *ngFor="let dataPoint of data">
+        <drm-card [fileName] = "dataPoint.fileName.S" [url]="dataPoint.s3Url.S" [uploadedAt]="dataPoint.uploadedAt.S" [keyWords]="dataPoint.keyWords.S"></drm-card>
 
         </ng-container>
     </div>

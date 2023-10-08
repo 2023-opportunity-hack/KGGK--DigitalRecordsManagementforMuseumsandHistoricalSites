@@ -6,6 +6,7 @@ import { ENTER, COMMA } from '@angular/cdk/keycodes';
 import { HttpClient } from '@angular/common/http';
 import { throwError } from 'rxjs';
 import {MatSnackBar} from '@angular/material/snack-bar';
+import { DashaboarService } from '../Service/dashboard.service';
 
 
 @Component({
@@ -36,13 +37,13 @@ export class AddFileComponent implements OnInit {
   }
 
 
-  constructor(private fb: FormBuilder, private _http: HttpClient, private _snackBar: MatSnackBar){}
+  constructor(private fb: FormBuilder, private _http: HttpClient, private _snackBar: MatSnackBar, private _dashboardService : DashaboarService){}
 
   ngOnInit(): void {
     this.uploadForm = this.fb.group({
       keywords : this.fb.array([]),
       uploadedAt : [''],
-      metadata : ['',Validators.required ]      
+      metadata : [ ,Validators.required ]      
       // samlRadio: samlRadioButton.MANUAL,
     });
 
@@ -66,64 +67,72 @@ export class AddFileComponent implements OnInit {
 
 
   metadataFile(event, eventType: string) {
-    const reader = new FileReader();
-
 
     switch (eventType) {
       case "fileDropped":
         this.metaDataFileName = event[0].name;
         this.file = event[0];
-        if(this.xmlFileTypeError(event[0])){return;}
-        this.fileReader.readAsText(event[0]);
+        // if(this.fileMetadata(event[0])){return;}
+        this.fileReader.readAsArrayBuffer(event[0]);
+        //console.log(this.fileReader.result)
+
+        this.uploadForm.patchValue({
+          metaData: this.fileReader.result,
+        });
         break;
 
       case "fileUploaded":
         this.metaDataFileName = event.target.files[0].name;
         this.file = event.target.files[0];
-        if(this.xmlFileTypeError(event.target.files[0])){return;}
-        this.fileReader.readAsText(event.target.files[0]);
+        // if(this.fileMetadata(event.target.files[0])){return;}
+        this.fileReader.readAsArrayBuffer(event.target.files[0]);
+        //console.log(this.fileReader)
+        //console.log(this.fileReader.result)
+        this.uploadForm.patchValue({
+          metaData: this.fileReader,
+        });
+
+        //console.log(this.uploadForm.value);
+
+
         break;
     }
   }
 
-  xmlFileTypeError(file:File){
-    if (this.file) {
-      const formData = new FormData();
+  // fileMetadata(file:File){
+  //   if (this.file) {
+  //     const formData = new FormData();
   
-      formData.append('file', this.file, this.file.name);
+  //     formData.append('file', this.file, this.file.name);
   
-      const upload$ = this._http.post("https://httpbin.org/post", formData);
+  //     const upload$ = this._http.post("https://httpbin.org/post", formData);
   
-      this.status = 'uploading';
+  //     this.status = 'uploading';
   
-      upload$.subscribe({
-        next: () => {
-          this.status = 'success';
-          console.log("success");
-        },
-        error: (error: any) => {
-          this.status = 'fail';
-          console.log("fail");
-          return throwError(() => error);
-        },
-      });
-    }
-
-
-
-
-    this.showAlert = false;
-    if(file.type=='text/xml'){
-      return false;
-    }else{
-      this.uploadForm.patchValue({
-        metaData: '',
-      });
-      this.alertData.message = 'File Type must be XML'
-      this.showAlert = true;
-      return true;
-    }
-  }
+  //     upload$.subscribe({
+  //       next: () => {
+  //         this.status = 'success';
+  //         //console.log("success");
+  //       },
+  //       error: (error: any) => {
+  //         this.status = 'fail';
+  //         //console.log("fail");
+  //         return throwError(() => error);
+  //       },
+  //     });
+  //   }
+  //   this.showAlert = false;
+  //   if(file.type=='text/xml'){
+  //     return false;
+  //   }else{
+  //     this.uploadForm.patchValue({
+  //       metaData: '',
+  //     });
+  //     this.alertData.message = 'File Type must be XML'
+  //     this.showAlert = true;
+  //     return true;
+  //   }
+  // }
 
 
   addKeyword(event: MatChipInputEvent): void {
@@ -161,14 +170,20 @@ export class AddFileComponent implements OnInit {
   }
 
   upload(){
-    console.log(this.uploadForm.value)
+    //console.log(this.uploadForm.value)
 
-    if(!this.uploadForm.valid) {
+    let obj  = this.uploadForm.value;
+
+    obj['metadata'] = this.file;
+    if(!this.uploadForm.valid){
       const ref =   this._snackBar.open('Please Upload the file first');
       setTimeout(()=>{
         ref.dismiss();
       },2000);
     }
+
+    //console.log(obj);
+    this._dashboardService.putRecords(obj).subscribe();
 
     
   }
