@@ -7,6 +7,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {MatNativeDateModule} from '@angular/material/core';
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { AngularMaterialsModule } from 'src/shared/material.module';
+import { HttpClientModule } from '@angular/common/http';
 @NgModule({
   declarations: [
     AppComponent
@@ -15,7 +16,8 @@ import { AngularMaterialsModule } from 'src/shared/material.module';
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
-    AngularMaterialsModule
+    AngularMaterialsModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]
