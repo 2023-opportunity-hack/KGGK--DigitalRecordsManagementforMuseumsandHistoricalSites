@@ -7,11 +7,10 @@ from rest_framework.response import Response
 
 @api_view(['POST'])
 def upload_to_s3(request):
-    print("Hello from API")
     file = request.FILES['file']
-    address = request.address
-    uploadedAt = request.uploadedAt
-    keyWords = request.keyWords
+    # address = request.address
+    # uploadedAt = request.uploadedAt
+    # keyWords = request.keyWords
     try:
         s3 = boto3.client(
             's3',
@@ -31,7 +30,7 @@ def upload_to_s3(request):
             'message': str(e)
         })
 
-        # file_path = '/Users/khiladi/Documents/GitHub/KGGK--DigitalRecordsManagementforMuseumsandHistoricalSites/Uploader/pages/file1.pdf'
+        # file_path = '/Users/khiladi/Documents/GitHub/KGGK--DigitalRecordsManagementforMuseumsandHistoricalSites/kggkHack/pages/file1.pdf'
         # filename = os.path.basename(file_path)
         # with open(file_path, 'rb') as file_obj:
         #     s3.upload_fileobj(file_obj, settings.AWS_STORAGE_BUCKET_NAME,filename )
