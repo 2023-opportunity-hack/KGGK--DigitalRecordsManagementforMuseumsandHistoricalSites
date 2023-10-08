@@ -19,6 +19,6 @@ for file in dir_list:
                 data = data.decode()
             if(tag == 'DateTime'):
                 image_metadata['DateTime'] = exifdata[306]
-            if(tag=='ImageDescription'):
+            if(tag == 'ImageDescription'):
                 image_metadata['description'] = exifdata[270]
     print(image_metadata)
