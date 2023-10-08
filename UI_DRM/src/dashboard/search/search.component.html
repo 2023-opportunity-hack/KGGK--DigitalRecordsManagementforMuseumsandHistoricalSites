@@ -1,0 +1,20 @@
+<div class="search">
+    <div class="search-bar">
+        <div class="morph-primary-text-input">
+                <input  type="text" [(ngModel)]="value" placeholder="Search anything...">
+        </div>
+        <div class="button">
+            <button mat-stroked-button><mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="search"></mat-icon> Search </button>
+        </div>
+    </div>
+    
+
+    <div class="cards">
+
+        <ng-container *ngFor="let i of lengths">
+        <drm-card fileName = "Ankur.pdf" url="https://kggk-files.s3.amazonaws.com/alligator+pit.jpg"></drm-card>
+
+        </ng-container>
+    </div>
+      
+</div>
