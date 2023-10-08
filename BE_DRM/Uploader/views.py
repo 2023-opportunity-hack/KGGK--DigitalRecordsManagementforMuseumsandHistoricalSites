@@ -1,4 +1,3 @@
-import os
 import boto3
 from django.conf import settings
 from django.http import JsonResponse
@@ -18,10 +17,10 @@ def upload_to_s3(request):
             aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
             region_name=settings.AWS_S3_REGION_NAME
         )
-        response = s3.upload_fileobj(file, settings.AWS_STORAGE_BUCKET_NAME, file.name)
+        s3.upload_fileobj(file, settings.AWS_STORAGE_BUCKET_NAME, file.name)
+        # s3Url = "https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/{file.name}"
         return Response({
-            'success': True, 
-            'metaData': response,
+            'success': True,
             'message': 'File uploaded successfully'
         })
     except Exception as e:
@@ -30,7 +29,16 @@ def upload_to_s3(request):
             'message': str(e)
         })
 
-        # file_path = '/Users/khiladi/Documents/GitHub/KGGK--DigitalRecordsManagementforMuseumsandHistoricalSites/kggkHack/pages/file1.pdf'
-        # filename = os.path.basename(file_path)
-        # with open(file_path, 'rb') as file_obj:
-        #     s3.upload_fileobj(file_obj, settings.AWS_STORAGE_BUCKET_NAME,filename )
+@api_view(['GET'])
+def searchFile(request):
+    print('hello', request.GET)
+    try:
+        return Response({
+            'success': False, 
+            'message': 'Working!!!'
+        })
+    except Exception as e:
+        return Response({
+            'success': False, 
+            'message': str(e)
+        })
